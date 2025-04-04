@@ -9,6 +9,20 @@ _M.result = nil
 _M.base = config.url..'/api/v1/'
 log.outfile = 'logs/espocms_'..os.date('%Y-%m-%d')..'.log' 
 log.level = 'trace'	
+_M.defaults = {
+	['filter'] = {},
+	['maxSize'] = 5,
+	['offset'] = 0,
+	['orderBy'] = 'number',
+	['order'] = 'desc'	
+}
+
+function query(data)
+	if not data then return '' end
+	local str = _M.auth
+	for k,v in pairs(data) do str = str..'&'..k..'='..v end
+	return str
+end
 
 function get_result(str,url)
 	local result, err = pcall(json.decode,str)
@@ -120,6 +134,7 @@ function delete(url)
 end
 
 function _M.list(typ,searchParams)
+	if not searchParams then searchParams = _M.defaults end
 	return get(typ,{['searchParams']=json.encode(searchParams)})
 end
 
